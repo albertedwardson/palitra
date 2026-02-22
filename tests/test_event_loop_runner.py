@@ -2,8 +2,8 @@
 
 import asyncio
 import threading
-from collections.abc import Coroutine
-from typing import Any, Callable
+from collections.abc import Callable, Coroutine
+from typing import Any
 
 import pytest
 

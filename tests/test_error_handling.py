@@ -2,19 +2,14 @@
 
 import asyncio
 import contextlib
-import sys
 import threading
 from collections.abc import Callable, Coroutine
-from typing import Any, NoReturn, TypeVar
+from typing import Any, NoReturn, ParamSpec, TypeVar
 
 import pytest
 
 from palitra import EventLoopThreadRunner, gather, run
 
-if sys.version_info < (3, 10):
-    from typing_extensions import ParamSpec
-else:
-    from typing import ParamSpec
 T = TypeVar("T")
 P = ParamSpec("P")
 

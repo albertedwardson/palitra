@@ -1,11 +1,11 @@
 
-## Comparison with Alternatives
+# Comparison with Alternatives
 
 | Feature                | `palitra`                         | `asyncio.run()` | [`nest_asyncio`](https://github.com/erdewit/nest_asyncio) | [`asgiref.AsyncToSync`](https://github.com/django/asgiref) | [`xloem/async_to_sync`](https://github.com/xloem/async_to_sync) | [`miyakogi/syncer`](https://github.com/miyakogi/syncer) | [`Haskely/async-sync`](https://github.com/Haskely/async-sync) |
 | ---------------------- | --------------------------------- | --------------- | --------------------------------------------------------- | ---------------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------- |
-| **Loop Persistence**   | ✅ Persistent (background thread) | ❌ Per call     | ✅ Patches                                                | ✅❌ Per call (if no running event loop in main thread)                        | ✅ Persistent (background thread)                               | ❌ Per call                                             | ❌ Per call                                                   |
-| **Concurrency**        | ✅ Full                           | ❌ One-shot     | ✅                                                        | ✅❌ Per call (if no running event loop in main thread)                                                     | ✅                                                              | ❌ Single-thread blocking                               | ❌ Blocking                                                   |
-| **No Monkey Patching** | ✅ Yes                            | ✅ Yes          | ❌ Required                                               | ✅ Yes                                                     | ✅ Yes                                                          | ✅ Yes                                                  | ✅ Yes                                                        |
+| **Loop Persistence**   | + Persistent (background thread)  | - Per call      | + But does monkey-patchig                                 | - Per call (if no running event loop in main thread)       | + Persistent (background thread)                                | - Per call                                              | - Per call                                                    |
+| **Concurrency**        | + Full                            | - One-shot      | +                                                         | - Per call (if no running event loop in main thread)       | +                                                               | - Single-thread blocking                                | - Blocking                                                    |
+| **No Monkey Patching** | + Yes                             | + Yes           | - Required                                                | + Yes                                                      | + Yes                                                           | + Yes                                                   | + Yes                                                         |
 
 ---
 
@@ -23,15 +23,15 @@ While `palitra` and `asgiref.sync.AsyncToSync` both enable running async code fr
 
 ### Key Differences
 
-| Aspect                       | `palitra`                                               | `asgiref.sync.AsyncToSync`                      |
-| ---------------------------- | ------------------------------------------------------- | ----------------------------------------------- |
-| **Event Loop**               | Persistent background loop (one per runner)             | Reuses loop if possible, else creates temporary |
-| **Execution Model**          | Dedicated thread runs the event loop                    | Coroutine scheduled into existing thread/loop   |
-| **Loop Lifetime**            | Explicitly managed or global singleton                  | Per-call if there is none in main thread (usually short-lived)                  |
-| **Thread Handling**          | Coroutines run in background thread, sync caller blocks | Complex dance to preserve thread affinity       |
-| **Performance (Multi-call)** | Efficient — no repeated loop creation                   | Overhead from loop setup/teardown               |
-| **State Preservation**       | Loop state preserved across sync calls                  | State lost unless explicitly preserved          |
-| **Shutdown Control**         | `shutdown_global_runner()` available                    | No manual lifecycle management                  |
+| Aspect                       | `palitra`                                               | `asgiref.sync.AsyncToSync`                                     |
+| ---------------------------- | ------------------------------------------------------- | -------------------------------------------------------------- |
+| **Event Loop**               | Persistent background loop (one per runner)             | Reuses loop if possible, else creates temporary                |
+| **Execution Model**          | Dedicated thread runs the event loop                    | Coroutine scheduled into existing thread/loop                  |
+| **Loop Lifetime**            | Explicitly managed or global singleton                  | Per-call if there is none in main thread (usually short-lived) |
+| **Thread Handling**          | Coroutines run in background thread, sync caller blocks | Complex dance to preserve thread affinity                      |
+| **Performance (Multi-call)** | Efficient — no repeated loop creation                   | Overhead from loop setup/teardown                              |
+| **State Preservation**       | Loop state preserved across sync calls                  | State lost unless explicitly preserved                         |
+| **Shutdown Control**         | `shutdown_global_runner()` available                    | No manual lifecycle management                                 |
 
 ### Best Use Cases
 
