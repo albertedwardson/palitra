@@ -6,16 +6,11 @@ import sys
 import threading
 from collections.abc import Callable, Coroutine
 from multiprocessing import Process
-from typing import TypeVar, Union
+from typing import ParamSpec, TypeVar
 
 import pytest
 
 from palitra import gather, is_runner_alive, run, shutdown_global_runner
-
-if sys.version_info < (3, 10):
-    from typing_extensions import ParamSpec
-else:
-    from typing import ParamSpec
 
 T = TypeVar("T")
 P = ParamSpec("P")
@@ -133,7 +128,7 @@ def test_multiple_gc_collect_during_execution() -> None:
 def test_gc_collect_with_exception_handling() -> None:
     """Test gc.collect() behavior when exceptions occur."""
 
-    async def failing_task() -> Union[str, None]:
+    async def failing_task() -> str | None:
         try:
             await asyncio.sleep(0.01)
             gc.collect()
@@ -172,7 +167,7 @@ def test_gc_collect_with_complex_object_graph() -> None:
 
     class Node:
         def __init__(self) -> None:
-            self.ref: Union[Node, None] = None
+            self.ref: Node | None = None
 
     async def task() -> bool:
         # Create circular reference

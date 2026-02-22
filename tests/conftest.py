@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import sys
 from collections.abc import Callable, Coroutine, Generator
 from typing import NoReturn
 
@@ -8,13 +9,16 @@ import pytest
 
 from palitra import EventLoopThreadRunner
 
-event_loop_policies: list[type[asyncio.AbstractEventLoopPolicy]] = [
-    asyncio.DefaultEventLoopPolicy
+event_loop_implementations: list[type[asyncio.AbstractEventLoop]] = [
+    asyncio.BaseEventLoop
 ]
 try:
-    import uvloop  # type: ignore
+    if sys.platform == "win32":
+        import winloop as uvloop
+    else:
+        import uvloop
 
-    event_loop_policies.append(uvloop.EventLoopPolicy)
+    event_loop_implementations.append(uvloop.Loop)
 except ImportError:
     pass
 
@@ -35,12 +39,12 @@ async def long_running() -> None:
     await asyncio.sleep(1)
 
 
-@pytest.fixture(params=event_loop_policies, scope="function")
+@pytest.fixture(params=event_loop_implementations, scope="function")
 def event_loop_runner(
     request: pytest.FixtureRequest,
 ) -> Generator[EventLoopThreadRunner, None, None]:
     """Fixture providing EventLoopThreadRunner with different event loop policies."""
-    asyncio.set_event_loop_policy(request.param())
+    asyncio.set_event_loop(request.param())
     runner = EventLoopThreadRunner()
     yield runner
     runner.close()

@@ -1,12 +1,12 @@
 # palitra
 
-A lightweight bridge between **synchronous and asynchronous Python code**, maintaining a **persistent** event loop in a background thread. It allows you to call `async def` functions directly from regular (sync) code without blocking or complex event loop reentry.
+> _a.k.a. "palette"_ — captures the essence of the library: blending differently colored (sync/async) functions like on an artist’s palette.
+
+It's a lightweight bridge between **synchronous and asynchronous Python code**, maintaining a **persistent** event loop in a background thread. It allows you to call `async def` functions directly from regular (sync) code without blocking or complex event loop reentry.
 
 Unlike `asyncio.run()`, which creates and tears down a new event loop on each call, using `palitra.run()` eliminates that overhead — preserving async state and resources (like aiohttp sessions or database connections) across multiple calls.
 
-> _a.k.a. "palette"_ — captures the essence of the library: blending differently colored (sync/async) functions like on an artist’s palette.
-
-> **⚠️ Known issues:** Unexpected behaviour in 3.13t build.
+> **⚠️ Known issues:** Unexpected behaviour at cleanup in free-threaded builds.
 
 If something breaks in your environment, please report an issue—the whole purpose of this library is to spare developers from reinventing async/sync bridges in every project. Your feedback directly helps improve its reliability and real-world compatibility.
 
@@ -28,22 +28,21 @@ pip install palitra
 - ✅ Automatic cleanup via `atexit` and weakref to global runner (if used)
 - ✅ Lightweight: no external dependencies
 
-
 ## [Documentation](https://github.com/abebus/palitra/tree/main/docs)
 
 [Why does this even exist?](https://github.com/abebus/palitra/tree/main/docs/faq.md)
 
 ## Usage Examples
 
-This is not ideal, but in real-world scenarios, migrating to ASGI isn’t always possible.
-When stuck with WSGI, palitra lets you still use async features to get things working.
+This is not ideal, but in real-world scenarios, migrating to native non-blocking/asyncio code isn’t always possible.
+When stuck with sync environment, palitra lets you still use async features to get things working.
 
 ### Flask with aiohttp
 
 ```python
 from flask import Flask, jsonify
 import palitra
-import aiohttp
+import aiohttp # better use niquests btw
 import asyncio
 
 app = Flask(__name__)
@@ -80,17 +79,16 @@ from celery import Celery
 import asyncio
 import time
 
-celery_app = Celery('tasks', broker='pyamqp://guest@localhost//')
+celery_app = Celery('tasks', broker='pyamqp://guest@localhost//') #  better migrate to taskiq
 
 async def async_processing(data: str) -> dict:
-    await asyncio.sleep(0.5)  # simulate async I/O
+    await asyncio.sleep(0.5)  # simulated async I/O
     return {"input": data, "processed": True, "timestamp": time.time()}
 
 @celery_app.task(name="process_async")
 def sync_celery_wrapper(data: str):
     return palitra.run(async_processing(data))
 ```
-
 
 ## Contributing
 
@@ -105,8 +103,8 @@ Pull requests are welcome! Please:
 
 - Proper stress testing
 - Verifying thread safety in edge cases
-- Detecting and eliminating memory leaks
 - Ensuring reliable shutdown under all conditions
+- Debug free-threading
 
 ---
 

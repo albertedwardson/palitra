@@ -1,7 +1,7 @@
 
-## API Reference
+# API Reference
 
-### High-Level API (Global Runner)
+## High-Level API (Global Runner)
 
 These top-level functions create and reuse a **singleton** `EventLoopThreadRunner` under the hood.
 
@@ -52,7 +52,7 @@ Explicitly shut down the global event loop runner and release resources.
 
 ---
 
-###  `EventLoopThreadRunner` Methods
+## `EventLoopThreadRunner` Methods
 
 Use the class directly if you need more control or isolation (e.g., separate event loop threads).
 

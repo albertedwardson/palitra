@@ -1,18 +1,12 @@
 from __future__ import annotations
 
 import asyncio
-import sys
 import weakref
 from collections.abc import Awaitable, Callable, Coroutine
 from threading import Lock
-from typing import Any, TypeVar
+from typing import Any, ParamSpec, TypeVar
 
 from ._core import EventLoopThreadRunner
-
-if sys.version_info < (3, 10):
-    from typing_extensions import ParamSpec
-else:
-    from typing import ParamSpec
 
 T = TypeVar("T")
 P = ParamSpec("P")

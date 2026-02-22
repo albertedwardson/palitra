@@ -18,10 +18,9 @@ jobs:
             ubuntu-latest,
             ubuntu-24.04-arm,
             windows-latest,
-            macos-13,
             macos-latest,
           ]
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.13t", "3.14"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.13t", "3.14", "3.14t"]
     steps:
       - uses: actions/checkout@v4
       - name: Install uv and set up Python ${{ matrix.python-version }}
@@ -66,9 +65,5 @@ jobs:
           pattern: ci-*
           path: dist
           merge-multiple: true
-      # - name: Publish to test PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1
-      #   with:
-      #     repository-url: https://test.pypi.org/legacy/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
