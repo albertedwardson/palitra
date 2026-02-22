@@ -8,7 +8,7 @@ Unlike `asyncio.run()`, which creates and tears down a new event loop on each ca
 
 > **⚠️ Known issues:** Unexpected behaviour at cleanup in free-threaded builds.
 
-If something breaks in your environment, please report an issue — the whole purpose of this library is to spare developers from reinventing async/sync bridges in every project. Your feedback directly helps improve its reliability and real-world compatibility.
+If something breaks in your environment, please report an issue—the whole purpose of this library is to spare developers from reinventing async/sync bridges in every project. Your feedback directly helps improve its reliability and real-world compatibility.
 
 > Inspired by [Running async code from sync in Python asyncio](https://death.andgravity.com/asyncio-bridge) by [lemon24](https://github.com/lemon24) and related discussions such as [Celery #9058](https://github.com/celery/celery/discussions/9058).
 
