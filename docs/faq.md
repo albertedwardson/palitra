@@ -1,5 +1,5 @@
 
-## How It Works
+# How It Works
 
 1. Starts a background thread that runs an `asyncio` event loop.
 2. Internally uses `asyncio.run_coroutine_threadsafe(...)` for thread-safe execution.

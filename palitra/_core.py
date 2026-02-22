@@ -4,17 +4,10 @@ from __future__ import annotations
 
 import asyncio
 import atexit
-import sys
 import threading
 from collections.abc import Awaitable, Callable, Coroutine
 from types import TracebackType
 from typing import Any, TypeVar
-
-if sys.version_info >= (3, 11):
-    from typing import Self
-else:
-    from typing_extensions import Self
-
 
 T = TypeVar("T")
 
@@ -108,6 +101,9 @@ class EventLoopThreadRunner:
         if debug is not None:
             self.get_loop().set_debug(debug)
 
+        if threading.current_thread() is self._thread:
+            raise RuntimeError("Cannot call run() from the loop thread")
+
         async def wrapped() -> T:
             return await asyncio.wait_for(coro, timeout)
 
@@ -151,12 +147,14 @@ class EventLoopThreadRunner:
         Cleans up resources registered in the internal context stack.
         """
         loop = self.get_loop()
-        if loop.is_closed():
+        if not self._thread.is_alive() or loop.is_closed():
             return
         loop.call_soon_threadsafe(loop.stop)
-        self._thread.join()
 
-    def __enter__(self) -> Self:
+        if threading.current_thread() is not self._thread:
+            self._thread.join()
+
+    def __enter__(self) -> EventLoopThreadRunner:
         return self
 
     def __exit__(
